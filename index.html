@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#100b19">
+<title>ROGETTOSS // FUNKIN' HUB</title>
+<style>
+:root{--bg:#0b0810;--panel:#191222;--line:#392746;--pink:#ff3c86;--cyan:#56f3e8;--muted:#b9a9c7}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#2b1438,#0b0810 55%);color:#fff;font:16px/1.5 system-ui,Arial,sans-serif;min-height:100vh}
+header{text-align:center;padding:40px 16px 28px;border-bottom:1px solid var(--line)}.kicker{font-size:.75rem;letter-spacing:.22em;color:var(--cyan);font-weight:800}
+h1{font-size:clamp(2.3rem,9vw,4.5rem);line-height:1;margin:14px 0;text-shadow:3px 3px #70204c;letter-spacing:-.06em}h1 span{color:var(--pink)}header p{max-width:680px;margin:auto;color:var(--muted)}
+main{max-width:1100px;margin:auto;padding:22px 14px 48px}.bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}input,select{font:inherit;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:white}input{flex:1;min-width:180px}
+.note{padding:13px 15px;background:#1a1123;border:1px solid #4b315b;border-radius:13px;color:var(--muted);margin-bottom:20px}.note b{color:white}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:15px}.card{background:linear-gradient(145deg,#24172f,#15101c);border:1px solid var(--line);border-radius:17px;padding:18px;display:flex;flex-direction:column;min-height:220px}.card h2{font-size:1.15rem;margin:0}.tag{font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;background:#123d39;color:#8afff3;border-radius:30px;padding:4px 8px;white-space:nowrap}.card p{color:var(--muted);font-size:.92rem}.meta{margin-top:auto;color:#9c8ba9;font-size:.78rem;margin-bottom:12px}.actions{display:flex;gap:8px;flex-wrap:wrap}a.btn{display:inline-block;text-decoration:none;background:var(--pink);color:#1b0710;font-weight:800;border-radius:10px;padding:10px 12px;font-size:.88rem}a.secondary{background:transparent;color:var(--cyan);border:1px solid #397e79}.empty{display:none;color:var(--muted);padding:30px;text-align:center}footer{text-align:center;color:#92819f;font-size:.8rem;padding:18px}
+#player{display:none;margin:0 0 22px;border:1px solid var(--line);background:#08060b;border-radius:16px;overflow:hidden}#player.active{display:block}.playerbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 13px;background:#1c1325}#gameframe{width:100%;height:min(70vh,650px);border:0;background:#000}button{border:1px solid var(--line);border-radius:9px;background:#291a35;color:white;padding:8px 12px;font:inherit;cursor:pointer}
+</style>
+</head>
+<body>
+<header><div class="kicker">ROGETTOSS PRESENTS</div><h1>FUNKIN' <span>HUB</span></h1><p>Tu colección de FNF: busca, filtra y abre juegos web desde un solo sitio.</p></header>
+<main>
+<div class="bar"><input id="search" type="search" placeholder="🔎 Buscar juegos o mods…" aria-label="Buscar juegos"><select id="filter" aria-label="Filtrar"><option value="all">Todos</option><option value="web">Juego web</option><option value="link">Enlace externo</option></select></div>
+<div class="note"><b>Cómo añadir juegos:</b> crea una carpeta dentro de <code>games/</code>, mete el juego web legalmente redistribuible con su <code>index.html</code> y añade un archivo <code>game.json</code>. Al subir los cambios, el catálogo se actualiza solo. Los enlaces externos también sirven para juegos que no se pueden alojar.</div>
+<section id="player"><div class="playerbar"><b id="playingTitle">Juego</b><div><button id="newTab">Abrir en otra pestaña ↗</button> <button id="close">Cerrar ✕</button></div></div><iframe id="gameframe" title="Juego seleccionado" allow="fullscreen; autoplay" allowfullscreen></iframe></section>
+<section class="grid" id="games"><article class="card"><h2>Cargando juegos…</h2></article></section><div class="empty" id="empty">No hay resultados.</div>
+</main><footer>FUNKIN' HUB · Fan portal no oficial. Respeta las licencias de cada juego y mod.</footer>
+<script>
+let allGames=[];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function render(){
+ const q=document.getElementById('search').value.trim().toLowerCase(), f=document.getElementById('filter').value;
+ const items=allGames.filter(g=>(f==='all'||g.type===f)&&(`${g.title} ${g.description} ${g.tags||''}`).toLowerCase().includes(q));
+ document.getElementById('games').innerHTML=items.map(g=>`<article class="card"><div style="display:flex;justify-content:space-between;gap:8px;align-items:start"><h2>${esc(g.title)}</h2><span class="tag">${g.type==='web'?'Juego web':'Enlace'}</span></div><p>${esc(g.description||'')}</p><div class="meta">${esc(g.category||'FNF / Mod')}</div><div class="actions">${g.type==='web'?`<a class="btn" href="#" data-play="${esc(g.path)}" data-title="${esc(g.title)}">Jugar aquí ▶</a><a class="btn secondary" href="${esc(g.path)}" target="_blank" rel="noopener">Nueva pestaña ↗</a>`:`<a class="btn" href="${esc(g.url)}" target="_blank" rel="noopener">Abrir proyecto ↗</a>`}</div></article>`).join('');
+ document.getElementById('empty').style.display=items.length?'none':'block';
+ document.querySelectorAll('[data-play]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();const p=a.dataset.play;const frame=document.getElementById('gameframe');frame.src=p;document.getElementById('playingTitle').textContent=a.dataset.title;document.getElementById('player').classList.add('active');document.getElementById('player').scrollIntoView({behavior:'smooth',block:'start'});document.getElementById('newTab').onclick=()=>window.open(p,'_blank','noopener');}));
+}
+document.getElementById('search').addEventListener('input',render);document.getElementById('filter').addEventListener('change',render);
+document.getElementById('close').onclick=()=>{document.getElementById('gameframe').src='about:blank';document.getElementById('player').classList.remove('active')};
+fetch('./games.json').then(r=>{if(!r.ok)throw Error('no catalog');return r.json()}).then(d=>{allGames=d;render()}).catch(()=>{document.getElementById('games').innerHTML='<article class="card"><h2>No se pudo cargar el catálogo</h2><p>Espera a que GitHub Actions termine y recarga la página.</p></article>'});
+</script></body></html>

@@ -1,0 +1,39 @@
+ROGETTOSS FUNKIN' HUB — KIT PARA PUBLICAR DESDE EL MÓVIL
+
+QUÉ HACE
+- Publica un portal estático con buscador.
+- El catálogo se genera automáticamente al subir carpetas nuevas dentro de games/.
+- Para que un juego web aparezca, su carpeta necesita game.json e index.html.
+- Para un juego que solo tenga una página externa, crea game.json con type "link" y una URL.
+
+IMPORTANTE
+- No basta con meter archivos sueltos: cada juego debe ir en su propia carpeta.
+- El portal solo aloja juegos HTML5 completos. Un .exe o un proyecto fuente no funciona directamente en el navegador.
+- Sube solo juegos y recursos que tengas permiso para alojar. Las licencias de música, arte y código pueden ser distintas.
+- GitHub Pages publica la web en internet; no sirve para saltarse filtros de una red escolar.
+- El flujo se activa al subir los archivos a la rama main. En GitHub, activa Settings > Pages y elige GitHub Actions si te lo pide.
+
+AÑADIR UN JUEGO WEB
+1. Crea games/nombre-del-juego/
+2. Copia ahí el juego web completo, con su index.html y archivos de recursos.
+3. Crea game.json en esa carpeta, siguiendo el ejemplo.
+4. Sube los cambios a GitHub. Actions genera games.json automáticamente y publica la web.
+
+EJEMPLO DE game.json:
+{
+  "title": "Nombre del mod",
+  "description": "Descripción corta",
+  "category": "FNF",
+  "tags": "tricky madness",
+  "type": "web"
+}
+
+PARA UN ENLACE EXTERNO:
+{
+  "title": "Nombre del mod",
+  "description": "Página original del autor",
+  "category": "FNF",
+  "tags": "mod",
+  "type": "link",
+  "url": "https://ejemplo.com/pagina-del-juego"
+}
